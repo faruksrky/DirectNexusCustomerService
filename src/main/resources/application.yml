@@ -2,10 +2,21 @@ spring:
   application:
     name: DirectNexus
   datasource:
-    url: jdbc:postgresql://localhost:5432/direct_nexus
-    username: postgres
-    password: password
+    url: jdbc:postgresql://localhost:5432/direct_db
+    username: direct_user
+    password: 1234
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: true
+server:
+  port: 6700
+  servlet:
+    context-path: /auth
+app:
+  keycloak:
+    admin:
+      clientId: admin-cli
+      clientSecret: b1PWp9JWvW19oKDqWdGKbzHiQbXdr0o4
+    realm:
+    serverUrl: http://localhost:9082

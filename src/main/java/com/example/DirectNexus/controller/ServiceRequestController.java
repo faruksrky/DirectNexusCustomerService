@@ -20,7 +20,7 @@ public class ServiceRequestController {
     }
 
     @GetMapping
-    @CrossOrigin(origins = "http://localhost:3000")
+    @CrossOrigin(origins = "http://localhost:3031")
     public List<ServiceRequest> getAllServiceRequests() {
         return serviceRequestService.findAll();
     }

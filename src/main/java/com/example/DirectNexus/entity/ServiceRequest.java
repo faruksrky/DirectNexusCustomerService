@@ -1,7 +1,6 @@
 package com.example.DirectNexus.entity;
 
 
-import com.example.DirectNexus.enums.PaymentStatus;
 import com.example.DirectNexus.enums.ServiceCompletionStatus;
 import com.example.DirectNexus.enums.WarrantyStatus;
 import jakarta.persistence.*;
@@ -9,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -22,8 +22,8 @@ import java.util.UUID;
 @Table(name = "service_request_form")
 public class ServiceRequest {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     // Customer Information
     @Column(name = "customer_first_name", nullable = false)
@@ -45,24 +45,12 @@ public class ServiceRequest {
     @Column(name = "product_name", nullable = false)
     private String productName;
 
-    @Column(name = "model")
-    private String model;
-
-    @Column(name = "serial_number")
-    private String serialNumber;
-
-    @Column(name = "purchase_date")
-    private LocalDate purchaseDate;
-
     // Fault Information
     @Column(name = "fault_description")
     private String faultDescription;
 
     @Column(name = "fault_date")
     private LocalDate faultDate;
-
-    @Column(name = "preliminary_diagnosis")
-    private String preliminaryDiagnosis;
 
     // Service Information
     @Column(name = "service_personnel")
@@ -71,25 +59,17 @@ public class ServiceRequest {
     @Column(name = "operation_date")
     private LocalDate operationDate;
 
-    @Column(name = "performed_operations")
-    private String performedOperations;
-
-    @Column(name = "replaced_parts")
-    private String replacedParts;
-
     // Additional Information
-    @Enumerated(EnumType.STRING)
+    @Enumerated(EnumType.ORDINAL)
     @Column(name = "warranty_status")
     private WarrantyStatus warrantyStatus;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "payment_status")
-    private PaymentStatus paymentStatus;
+    @Column(name = "cargo_status")
+    private String cargoStatus;
 
-    @Enumerated(EnumType.STRING)
+    @Enumerated(EnumType.ORDINAL)
     @Column(name = "service_completion_status")
     private ServiceCompletionStatus serviceCompletionStatus;
-
 
     @Column(name = "delivery_date")
     private LocalDate deliveryDate;
@@ -97,10 +77,11 @@ public class ServiceRequest {
     @Column(name = "notes", columnDefinition = "TEXT")
     private String notes;
 
-    // Metadata
+    @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
+    @CreationTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 

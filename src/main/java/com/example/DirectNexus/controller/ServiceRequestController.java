@@ -3,11 +3,11 @@ package com.example.DirectNexus.controller;
 import com.example.DirectNexus.entity.ServiceRequest;
 import com.example.DirectNexus.service.ServiceRequestService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/service-requests")
@@ -20,23 +20,35 @@ public class ServiceRequestController {
     }
 
     @GetMapping
-    @CrossOrigin(origins = "http://localhost:3031")
     public List<ServiceRequest> getAllServiceRequests() {
         return serviceRequestService.findAll();
     }
 
     @GetMapping("/{id}")
-    public Optional<ServiceRequest> getServiceRequestById(@PathVariable UUID id) {
-        return serviceRequestService.findById(id);
-    }
+    public ResponseEntity<ServiceRequest> getServiceRequestById(@PathVariable Long id) {
+        return serviceRequestService.findById(id)
+            .map(ResponseEntity::ok)
+            .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+}
 
     @PostMapping
     public ServiceRequest createServiceRequest(@RequestBody ServiceRequest serviceRequest) {
         return serviceRequestService.save(serviceRequest);
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<ServiceRequest> updateServiceRequest(@PathVariable Long id, @RequestBody ServiceRequest serviceRequest) {
+        try {
+            ServiceRequest updatedServiceRequest = serviceRequestService.update(id, serviceRequest);
+            return ResponseEntity.ok(updatedServiceRequest);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+
     @DeleteMapping("/{id}")
-    public void deleteServiceRequest(@PathVariable UUID id) {
+    public ResponseEntity<Void> deleteServiceRequest(@PathVariable Long id) {
         serviceRequestService.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 }

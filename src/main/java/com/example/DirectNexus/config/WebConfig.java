@@ -14,7 +14,7 @@ public class WebConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/api/**")
-                        .allowedOrigins("http://88.99.174.69")
+                        .allowedOrigins("https://www.boostergin.com")
                         .allowedMethods("GET", "POST", "PUT", "DELETE");
             }
         };

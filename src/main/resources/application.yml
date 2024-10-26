@@ -2,7 +2,7 @@ spring:
   application:
     name: DirectNexus
   datasource:
-    url: jdbc:postgresql://www.boostergin.com:5432/direct_db
+    url: jdbc:postgresql://localhost:5432/direct_db
     username: keycloak
     password: password
   jpa:

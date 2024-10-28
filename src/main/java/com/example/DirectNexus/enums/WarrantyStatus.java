@@ -1,7 +1,7 @@
 package com.example.DirectNexus.enums;
 
 public enum WarrantyStatus {
-    Aktif(0),
+    Garantili(0),
     Garanti_Dışı( 1),
     Bilinmiyor( 2);
 

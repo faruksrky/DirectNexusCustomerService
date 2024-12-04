@@ -3,6 +3,7 @@ package com.example.DirectNexus.entity;
 
 import com.example.DirectNexus.enums.ServiceCompletionStatus;
 import com.example.DirectNexus.enums.WarrantyStatus;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,6 +13,7 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -50,6 +52,7 @@ public class ServiceRequest {
     private String faultDescription;
 
     @Column(name = "fault_date")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate faultDate;
 
     // Service Information
@@ -57,6 +60,7 @@ public class ServiceRequest {
     private String servicePersonnel;
 
     @Column(name = "operation_date")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate operationDate;
 
     // Additional Information
@@ -72,6 +76,7 @@ public class ServiceRequest {
     private ServiceCompletionStatus serviceCompletionStatus;
 
     @Column(name = "delivery_date")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate deliveryDate;
 
     @Column(name = "notes", columnDefinition = "TEXT")
@@ -84,5 +89,8 @@ public class ServiceRequest {
     @CreationTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    @Column (name="operation_performed")
+    private String operationPerformed;
 
 }

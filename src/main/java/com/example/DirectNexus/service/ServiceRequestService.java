@@ -31,9 +31,12 @@ public class ServiceRequestService {
                 .map(serviceRequest -> {
                     serviceRequest.setServicePersonnel(updatedServiceRequest.getServicePersonnel());
                     serviceRequest.setOperationDate(updatedServiceRequest.getOperationDate());
+                    serviceRequest.setDeliveryDate(updatedServiceRequest.getDeliveryDate());
                     serviceRequest.setServiceCompletionStatus(updatedServiceRequest.getServiceCompletionStatus());
                     serviceRequest.setWarrantyStatus(updatedServiceRequest.getWarrantyStatus());
                     serviceRequest.setCargoStatus(updatedServiceRequest.getCargoStatus());
+                    serviceRequest.setOperationPerformed(updatedServiceRequest.getOperationPerformed());
+                    serviceRequest.setNotes(updatedServiceRequest.getNotes());
                     serviceRequest.setUpdatedAt(LocalDateTime.now());
                     return serviceRequestRepository.save(serviceRequest);
                 })
@@ -42,5 +45,4 @@ public class ServiceRequestService {
                     return serviceRequestRepository.save(updatedServiceRequest);
                 });
     }
-
 }

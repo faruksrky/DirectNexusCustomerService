@@ -1,9 +1,11 @@
 package com.example.DirectNexus.enums;
 
 public enum ServiceCompletionStatus {
-    Beklemede(0),
-    Tamamlandı(1),
-    Teslim_Edildi( 2);
+    Talebiniz_Alındı(0),
+    Ürün_Teslim_Alındı(1),
+    işlem_Tamamlandı( 2),
+    Kargoya_Verildi(3);
+
 
     private final int priority;
 

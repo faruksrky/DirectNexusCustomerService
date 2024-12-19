@@ -1,6 +1,7 @@
 package com.example.DirectNexus.service;
 
 import com.example.DirectNexus.entity.ServiceRequest;
+import com.example.DirectNexus.exception.ResourceNotFoundException;
 import com.example.DirectNexus.repository.ServiceRequestRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -45,4 +46,19 @@ public class ServiceRequestService {
                     return serviceRequestRepository.save(updatedServiceRequest);
                 });
     }
+
+    public String findByCompletionStatusById(Long id) throws ResourceNotFoundException {
+        ServiceRequest serviceRequest = serviceRequestRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Servis kaydı bulunamadı: ID = " + id));
+
+        // ServiceCompletionStatus null kontrolü
+        if (serviceRequest.getServiceCompletionStatus() == null) {
+            throw new IllegalStateException("Servis tamamlama durumu bulunamadı: ID = " + id);
+        }
+
+        // Enum değerini döndür
+        return serviceRequest.getServiceCompletionStatus().name();
+    }
+
+
 }

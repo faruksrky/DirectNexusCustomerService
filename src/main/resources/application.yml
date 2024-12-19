@@ -2,7 +2,7 @@ spring:
   application:
     name: DirectNexus
   datasource:
-    url: jdbc:postgresql://localhost:5432/direct_db
+    url: jdbc:postgresql://postgres:5432/direct_db
     username: keycloak
     password: password
   jpa:
@@ -13,4 +13,4 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
 server:
-  port: 8083
+  port: 8081

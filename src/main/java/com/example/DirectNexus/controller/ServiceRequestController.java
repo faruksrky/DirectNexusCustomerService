@@ -26,7 +26,7 @@ public class ServiceRequestController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ServiceRequest> getServiceRequestById(@PathVariable Long id) {
+    public ResponseEntity<ServiceRequest> getServiceRequestById(@PathVariable Long id) throws ResourceNotFoundException{
         return serviceRequestService.findById(id)
             .map(ResponseEntity::ok)
             .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());

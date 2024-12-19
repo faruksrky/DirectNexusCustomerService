@@ -21,8 +21,9 @@ public class ServiceRequestService {
     public List<ServiceRequest> findAll() {
         return serviceRequestRepository.findAll();
     }
-    public Optional<ServiceRequest> findById(Long id) {
-        return serviceRequestRepository.findById(id);
+    public Optional<ServiceRequest> findById(Long id) throws ResourceNotFoundException {
+        return Optional.ofNullable(serviceRequestRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Servis kaydı bulunamadı: ID = " + id)));
     }
     public void deleteById(Long id) {
         serviceRequestRepository.deleteById(id);

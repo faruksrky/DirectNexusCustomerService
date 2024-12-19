@@ -91,4 +91,7 @@ public class ServiceRequest {
     @Column (name="operation_performed")
     private String operationPerformed;
 
+    @Column(name = "invoice_url")
+    private String invoiceUrl;
+
 }

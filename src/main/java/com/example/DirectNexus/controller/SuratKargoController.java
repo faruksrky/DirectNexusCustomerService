@@ -9,6 +9,7 @@ import com.example.DirectNexus.config.KargoSoapClient;
 import javax.xml.soap.SOAPMessage;
 
 @RestController
+@RequestMapping("/api/suratkargo")
 public class SuratKargoController {
 
     @PostMapping("/kargodurumu")

@@ -1,6 +1,7 @@
 package com.example.DirectNexus.controller;
 
 import com.example.DirectNexus.entity.ServiceRequest;
+import com.example.DirectNexus.exception.ResourceNotFoundException;
 import com.example.DirectNexus.service.ServiceRequestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -30,6 +31,11 @@ public class ServiceRequestController {
             .map(ResponseEntity::ok)
             .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
 }
+
+    @GetMapping("/completionStatus/{id}")
+    public String getCompletionStatusById(@PathVariable Long id)  throws ResourceNotFoundException {
+        return serviceRequestService.findByCompletionStatusById(id);
+    }
 
     @PostMapping
     public ServiceRequest createServiceRequest(@RequestBody ServiceRequest serviceRequest) {

@@ -1,6 +1,8 @@
 package com.example.DirectNexus.controller;
 
-import com.example.DirectNexus.entity.ServiceRequest;
+import com.example.DirectNexus.dto.ServiceRequest;
+import com.example.DirectNexus.dto.StatusResponse;
+import com.example.DirectNexus.entity.ServiceEntity;
 import com.example.DirectNexus.exception.ResourceNotFoundException;
 import com.example.DirectNexus.service.ServiceRequestService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,32 +23,28 @@ public class ServiceRequestController {
     }
 
     @GetMapping
-    public List<ServiceRequest> getAllServiceRequests() {
+    public List<ServiceEntity> getAllServiceRequests() {
         return serviceRequestService.findAll();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ServiceRequest> getServiceRequestById(@PathVariable Long id) {
-        return serviceRequestService.findById(id)
-            .map(ResponseEntity::ok)
-            .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+    public ResponseEntity<ServiceEntity> getServiceRequestById(@PathVariable Long id) throws ResourceNotFoundException {
+        ServiceEntity serviceEntity = serviceRequestService.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("ID: " + id + " No'lu Servis Kaydı Bulunamadı"));
+        return ResponseEntity.ok(serviceEntity);
 }
 
-    @GetMapping("/completionStatus/{id}")
-    public String getCompletionStatusById(@PathVariable Long id)  throws ResourceNotFoundException {
-        return serviceRequestService.findByCompletionStatusById(id);
-    }
-
     @PostMapping
-    public ServiceRequest createServiceRequest(@RequestBody ServiceRequest serviceRequest) {
-        return serviceRequestService.save(serviceRequest);
+    public ResponseEntity<ServiceEntity> saveService(@RequestBody ServiceRequest serviceEntityRequestDTO) {
+        ServiceEntity savedEntity = serviceRequestService.save(serviceEntityRequestDTO);
+        return ResponseEntity.ok(savedEntity);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ServiceRequest> updateServiceRequest(@PathVariable Long id, @RequestBody ServiceRequest serviceRequest) {
+    public ResponseEntity<ServiceEntity> updateServiceRequest(@PathVariable Long id, @RequestBody ServiceEntity serviceEntityRequest) {
         try {
-            ServiceRequest updatedServiceRequest = serviceRequestService.update(id, serviceRequest);
-            return ResponseEntity.ok(updatedServiceRequest);
+            ServiceEntity updatedServiceEntityRequest = serviceRequestService.update(id, serviceEntityRequest);
+            return ResponseEntity.ok(updatedServiceEntityRequest);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
@@ -57,4 +55,12 @@ public class ServiceRequestController {
         serviceRequestService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/status/{id}")
+    public ResponseEntity<StatusResponse> getStatusByCustomerId(@PathVariable Long id) throws ResourceNotFoundException {
+        StatusResponse statusResponse = serviceRequestService.getStatusByCustomerId(id);
+        return ResponseEntity.ok(statusResponse);
+    }
+
+
 }

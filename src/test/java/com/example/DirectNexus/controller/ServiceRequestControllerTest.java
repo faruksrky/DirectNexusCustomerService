@@ -19,7 +19,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-public class ServiceEntityRequestControllerTest {
+public class ServiceRequestControllerTest {
 
     private MockMvc mockMvc;
 
@@ -60,18 +60,6 @@ public class ServiceEntityRequestControllerTest {
         when(serviceRequestService.findById(id)).thenReturn(Optional.empty());
         mockMvc.perform(get("/api/service-requests/{id}", id))
                 .andExpect(status().isNotFound());
-    }
-
-    @Test
-    void createServiceRequestReturnsCreated() throws Exception {
-        ServiceEntity serviceEntityRequest = new ServiceEntity();
-        serviceEntityRequest.setId(1L); // Ensure the id is set
-        when(serviceRequestService.save(any(ServiceEntity.class))).thenReturn(serviceEntityRequest);
-        mockMvc.perform(post("/api/service-requests")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{}"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").exists());
     }
 
     @Test

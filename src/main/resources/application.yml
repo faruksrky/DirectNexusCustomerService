@@ -17,5 +17,6 @@ spring:
       resourceserver:
         jwt:
           issuer-uri: http://localhost:9082/realms/DirectNexus
+          jwk-set-uri: http://localhost:9082/realms/DirectNexus/protocol/openid-connect/certs
 server:
   port: 8083

@@ -8,7 +8,9 @@ import com.example.DirectNexus.service.ServiceRequestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 import java.util.List;
 
@@ -35,10 +37,23 @@ public class ServiceRequestController {
 }
 
     @PostMapping
-    public ResponseEntity<ServiceEntity> saveService(@RequestBody ServiceRequest serviceEntityRequestDTO) {
+    public ResponseEntity<String> saveService(@RequestBody ServiceRequest serviceEntityRequestDTO,
+                                              @AuthenticationPrincipal Jwt jwt) {
+        // Token kontrolü
+        if (jwt == null) {
+            return ResponseEntity.status(403).body("Yetkiniz yok. Lütfen geçerli bir token sağlayın.");
+        }
+
+        String customClaim = jwt.getClaim("customClaim");
+        if (customClaim == null || !customClaim.equals("http://localhost:8083/api/service-requests")) {
+            return ResponseEntity.status(403).body("Token yetkili değil.");
+        }
+
+        // Token geçerliyse işlem devam eder
         ServiceEntity savedEntity = serviceRequestService.save(serviceEntityRequestDTO);
-        return ResponseEntity.ok(savedEntity);
+        return ResponseEntity.ok("Başarılı bir şekilde kaydedildi. ID: " + savedEntity.getId());
     }
+
 
     @PutMapping("/{id}")
     public ResponseEntity<ServiceEntity> updateServiceRequest(@PathVariable Long id, @RequestBody ServiceEntity serviceEntityRequest) {

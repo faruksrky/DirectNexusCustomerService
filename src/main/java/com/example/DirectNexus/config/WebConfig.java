@@ -1,43 +1,69 @@
-
 package com.example.DirectNexus.config;
-import lombok.RequiredArgsConstructor;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.JwtTimestampValidator;
+import org.springframework.security.oauth2.jwt.JwtValidators;
+import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
 
 import java.util.List;
 
-@EnableWebSecurity
 @EnableMethodSecurity
-@RequiredArgsConstructor
 @Configuration
 public class WebConfig {
 
     @Bean
-    public SecurityFilterChain corsConfigurer(HttpSecurity http) throws Exception {
-            http.cors(cors -> cors.configurationSource(request -> {
-                var corsConfiguration = new org.springframework.web.cors.CorsConfiguration();
-                corsConfiguration.setAllowedOrigins(List.of("http://localhost:3031"));
-                corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
-                corsConfiguration.setAllowedHeaders(List.of("*"));
-                corsConfiguration.setAllowCredentials(true);
-                return corsConfiguration;
-            }));
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        // CORS Konfigürasyonu
+        http.cors(cors -> cors.configurationSource(request -> {
+            CorsConfiguration corsConfiguration = new CorsConfiguration();
+            corsConfiguration.setAllowedOrigins(List.of("http://localhost:3031")); // İzin verilen kaynaklar
+            corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE")); // İzin verilen HTTP yöntemleri
+            corsConfiguration.setAllowedHeaders(List.of("*")); // İzin verilen header'lar
+            corsConfiguration.setAllowCredentials(true); // Kimlik bilgilerine izin ver
+            return corsConfiguration;
+        }));
 
-            http.csrf(AbstractHttpConfigurer::disable);
+        // CSRF Devre Dışı
+        http.csrf(csrf -> csrf.disable());
 
-            http.authorizeHttpRequests(authorizeRequests ->
-                            authorizeRequests
-                                    .requestMatchers("/**").permitAll() // Allow unauthenticated access
-                                    .anyRequest().authenticated() // Require authentication for other requests
-                    )
-                    .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+        // Yetkilendirme ve Oturum Yönetimi
+        http.authorizeHttpRequests(auth -> auth
+                .requestMatchers(HttpMethod.POST, "/api/service-requests/**").authenticated() // Sadece POST isteklerinde JWT doğrulama
+                .anyRequest().permitAll() // Diğer tüm istekler serbest
+        );
 
-            return http.build();
-        }
+        // Stateless Oturum Yönetimi
+        http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+
+        // OAuth2 Resource Server JWT yapılandırması
+        http.oauth2ResourceServer(oauth2 -> oauth2.jwt(jwtConfigurer -> {
+            jwtConfigurer.decoder(customJwtDecoder()); // Özel JWT Decoder kullan
+        }));
+
+        return http.build();
     }
+
+    // Özel JWT Decoder Bean
+    @Bean
+    public JwtDecoder customJwtDecoder() {
+        NimbusJwtDecoder jwtDecoder = NimbusJwtDecoder.withJwkSetUri("http://localhost:9082/realms/DirectNexus/protocol/openid-connect/certs").build();
+
+        // Token doğrulama özelleştirmesi
+        jwtDecoder.setJwtValidator(
+                JwtValidators.createDefaultWithIssuer("http://localhost:9082/realms/DirectNexus")
+        );
+
+        // Zaman damgası doğrulayıcı ekleme
+        jwtDecoder.setJwtValidator(new JwtTimestampValidator());
+
+        return jwtDecoder;
+    }
+}

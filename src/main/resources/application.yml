@@ -12,5 +12,12 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://direct.boostergin.com:9082/realms/DirectNexus
+          jwk-set-uri: https://direct.boostergin.com:9082/realms/DirectNexus/protocol/openid-connect/certs
 server:
   port: 8081
+

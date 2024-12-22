@@ -1,12 +1,16 @@
 package com.example.DirectNexus.controller;
 
-import com.example.DirectNexus.entity.ServiceRequest;
+import com.example.DirectNexus.dto.ServiceRequest;
+import com.example.DirectNexus.dto.StatusResponse;
+import com.example.DirectNexus.entity.ServiceEntity;
 import com.example.DirectNexus.exception.ResourceNotFoundException;
 import com.example.DirectNexus.service.ServiceRequestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 import java.util.List;
 
@@ -21,32 +25,41 @@ public class ServiceRequestController {
     }
 
     @GetMapping
-    public List<ServiceRequest> getAllServiceRequests() {
+    public List<ServiceEntity> getAllServiceRequests() {
         return serviceRequestService.findAll();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ServiceRequest> getServiceRequestById(@PathVariable Long id) throws ResourceNotFoundException{
-        return serviceRequestService.findById(id)
-            .map(ResponseEntity::ok)
-            .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
-}
-
-    @GetMapping("/completionStatus/{id}")
-    public String getCompletionStatusById(@PathVariable Long id)  throws ResourceNotFoundException {
-        return serviceRequestService.findByCompletionStatusById(id);
+    public ResponseEntity<ServiceEntity> getServiceRequestById(@PathVariable Long id) throws ResourceNotFoundException {
+        ServiceEntity serviceEntity = serviceRequestService.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("ID: " + id + " No'lu Servis Kaydı Bulunamadı"));
+        return ResponseEntity.ok(serviceEntity);
     }
 
     @PostMapping
-    public ServiceRequest createServiceRequest(@RequestBody ServiceRequest serviceRequest) {
-        return serviceRequestService.save(serviceRequest);
+    public ResponseEntity<String> saveService(@RequestBody ServiceRequest serviceEntityRequestDTO,
+                                              @AuthenticationPrincipal Jwt jwt) {
+        // Token kontrolü
+        if (jwt == null) {
+            return ResponseEntity.status(403).body("Yetkiniz yok. Lütfen geçerli bir token sağlayın.");
+        }
+
+        String customClaim = jwt.getClaim("customClaim");
+        if (customClaim == null || !customClaim.equals("http://localhost:8083/api/service-requests")) {
+            return ResponseEntity.status(403).body("Token yetkili değil.");
+        }
+
+        // Token geçerliyse işlem devam eder
+        ServiceEntity savedEntity = serviceRequestService.save(serviceEntityRequestDTO);
+        return ResponseEntity.ok("Başarılı bir şekilde kaydedildi. ID: " + savedEntity.getId());
     }
 
+
     @PutMapping("/{id}")
-    public ResponseEntity<ServiceRequest> updateServiceRequest(@PathVariable Long id, @RequestBody ServiceRequest serviceRequest) {
+    public ResponseEntity<ServiceEntity> updateServiceRequest(@PathVariable Long id, @RequestBody ServiceEntity serviceEntityRequest) {
         try {
-            ServiceRequest updatedServiceRequest = serviceRequestService.update(id, serviceRequest);
-            return ResponseEntity.ok(updatedServiceRequest);
+            ServiceEntity updatedServiceEntityRequest = serviceRequestService.update(id, serviceEntityRequest);
+            return ResponseEntity.ok(updatedServiceEntityRequest);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
@@ -57,4 +70,12 @@ public class ServiceRequestController {
         serviceRequestService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/status/{id}")
+    public ResponseEntity<StatusResponse> getStatusByCustomerId(@PathVariable Long id) throws ResourceNotFoundException {
+        StatusResponse statusResponse = serviceRequestService.getStatusByCustomerId(id);
+        return ResponseEntity.ok(statusResponse);
+    }
+
+
 }

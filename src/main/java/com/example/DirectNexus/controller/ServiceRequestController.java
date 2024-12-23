@@ -5,7 +5,9 @@ import com.example.DirectNexus.dto.StatusResponse;
 import com.example.DirectNexus.entity.ServiceEntity;
 import com.example.DirectNexus.exception.ResourceNotFoundException;
 import com.example.DirectNexus.service.ServiceRequestService;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -18,6 +20,9 @@ import java.util.List;
 @RequestMapping("/api/service-requests")
 public class ServiceRequestController {
     private final ServiceRequestService serviceRequestService;
+
+    @Value("${jwt.custom-claim}")
+    private String customClaimUri;
 
     @Autowired
     public ServiceRequestController(ServiceRequestService serviceRequestService) {
@@ -45,7 +50,7 @@ public class ServiceRequestController {
         }
 
         String customClaim = jwt.getClaim("customClaim");
-        if (customClaim == null || !customClaim.equals("http://localhost:8083/api/service-requests")) {
+        if (customClaim == null || !customClaim.equals(customClaimUri)) {
             return ResponseEntity.status(403).body("Token yetkili değil.");
         }
 

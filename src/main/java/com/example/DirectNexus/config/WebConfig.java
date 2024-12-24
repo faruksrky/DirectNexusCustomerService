@@ -30,7 +30,8 @@ public class WebConfig {
         http.csrf(AbstractHttpConfigurer::disable);
 
         http.authorizeHttpRequests(auth -> auth
-                .requestMatchers(HttpMethod.POST, "/api/service-requests/**").authenticated() // Sadece POST isteklerinde doğrulama
+                .requestMatchers(HttpMethod.POST, "/api/service-requests/**").authenticated() //  POST isteklerinde doğrulama
+                .requestMatchers(HttpMethod.DELETE, "/api/service-requests/**").authenticated() // DELETE istekleri doğrulama gerektirir
                 .anyRequest().permitAll() // Diğer istekler serbest
         );
 

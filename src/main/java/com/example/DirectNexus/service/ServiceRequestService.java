@@ -8,7 +8,7 @@ import com.example.DirectNexus.enums.WarrantyStatus;
 import com.example.DirectNexus.exception.ResourceNotFoundException;
 import com.example.DirectNexus.repository.ServiceRequestRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cglib.core.Local;
+import org.springframework.data.domain.Sort;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -44,7 +44,7 @@ public class ServiceRequestService {
 
 
     public List<ServiceEntity> findAll() {
-        return serviceRequestRepository.findAll();
+        return serviceRequestRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
     }
 
     public Optional<ServiceEntity> findById(Long id) throws ResourceNotFoundException{

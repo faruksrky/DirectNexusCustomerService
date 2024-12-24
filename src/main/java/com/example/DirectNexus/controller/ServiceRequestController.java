@@ -68,14 +68,36 @@ public class ServiceRequestController {
 
     // Tek bir ID'yi silme
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteServiceRequest(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteServiceRequest(@PathVariable Long id, @AuthenticationPrincipal Jwt jwt) {
+        // Token kontrolü
+        if (jwt == null) {
+            return ResponseEntity.status(403).build();
+        }
+
+        String customClaim = jwt.getClaim("customClaim");
+        if (customClaim == null || !customClaim.equals(jwtProperties.getCustomClaim())) {
+            return ResponseEntity.status(403).build();
+        }
+
+        // Token geçerliyse silme işlemi devam eder
         serviceRequestService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 
     // Birden fazla ID'yi silme
     @DeleteMapping
-    public ResponseEntity<Void> deleteServiceRequests(@RequestBody List<Long> ids) {
+    public ResponseEntity<Void> deleteServiceRequests(@RequestBody List<Long> ids, @AuthenticationPrincipal Jwt jwt) {
+        // Token kontrolü
+        if (jwt == null) {
+            return ResponseEntity.status(403).build();
+        }
+
+        String customClaim = jwt.getClaim("customClaim");
+        if (customClaim == null || !customClaim.equals(jwtProperties.getCustomClaim())) {
+            return ResponseEntity.status(403).build();
+        }
+
+        // Token geçerliyse silme işlemi devam eder
         serviceRequestService.deleteByIds(ids);
         return ResponseEntity.noContent().build();
     }

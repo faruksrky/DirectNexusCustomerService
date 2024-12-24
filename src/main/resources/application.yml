@@ -2,7 +2,7 @@ spring:
   application:
     name: DirectNexus
   datasource:
-    url: jdbc:postgresql://localhost:5432/direct_db
+    url: jdbc:postgresql://postgres:5432/direct_db
     username: keycloak
     password: password
   jpa:
@@ -16,9 +16,9 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:9082/realms/DirectNexus
-          jwk-set-uri: http://localhost:9082/realms/DirectNexus/protocol/openid-connect/certs
+          issuer-uri: https://keycloak.boostergin.com/realms/DirectNexus
+          jwk-set-uri: https://keycloak.boostergin.com/realms/DirectNexus/protocol/openid-connect/certs
 jwt:
-  custom-claim: http://localhost:8083/api/service-requests
+  custom-claim: https://customer.boostergin.com/api/service-requests
 server:
-  port: 8083
+  port: 8081

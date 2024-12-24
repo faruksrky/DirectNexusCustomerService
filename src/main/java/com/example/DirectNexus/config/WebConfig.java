@@ -9,7 +9,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.web.cors.CorsConfiguration;
 
 import java.util.List;
 
@@ -19,14 +18,6 @@ public class WebConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.cors(cors -> cors.configurationSource(request -> {
-            CorsConfiguration corsConfiguration = new CorsConfiguration();
-            corsConfiguration.setAllowedOrigins(List.of("http://localhost:3031")); // İzin verilen kaynaklar
-            corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE")); // İzin verilen HTTP yöntemleri
-            corsConfiguration.setAllowedHeaders(List.of("*")); // İzin verilen header'lar
-            corsConfiguration.setAllowCredentials(true); // Kimlik bilgilerine izin ver
-            return corsConfiguration;
-        }));
         http.csrf(AbstractHttpConfigurer::disable);
 
         http.authorizeHttpRequests(auth -> auth

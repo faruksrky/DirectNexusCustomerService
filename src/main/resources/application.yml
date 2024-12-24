@@ -18,7 +18,7 @@ spring:
         jwt:
           issuer-uri: https://keycloak.boostergin.com/realms/DirectNexus
           jwk-set-uri: https://keycloak.boostergin.com/realms/DirectNexus/protocol/openid-connect/certs
-          custom-claim: https://customer.boostergin.com/api/service-requests
+jwt:
+  custom-claim: https://customer.boostergin.com/api/service-requests
 server:
   port: 8081
-

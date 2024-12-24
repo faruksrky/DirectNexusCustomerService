@@ -55,6 +55,11 @@ public class ServiceRequestService {
         serviceRequestRepository.deleteById(id);
     }
 
+    // Birden fazla ID'yi silme
+    public void deleteByIds(List<Long> ids) {
+        ids.forEach(this::deleteById);
+    }
+
     public ServiceEntity update(Long id, ServiceEntity updatedServiceEntityRequest) {
         return serviceRequestRepository.findById(id)
                 .map(serviceEntityRequest -> {

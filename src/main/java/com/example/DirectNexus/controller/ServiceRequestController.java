@@ -1,11 +1,13 @@
 package com.example.DirectNexus.controller;
 
+import com.example.DirectNexus.config.JwtProperties;
 import com.example.DirectNexus.dto.ServiceRequest;
 import com.example.DirectNexus.dto.StatusResponse;
 import com.example.DirectNexus.entity.ServiceEntity;
 import com.example.DirectNexus.exception.ResourceNotFoundException;
 import com.example.DirectNexus.service.ServiceRequestService;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -18,16 +20,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/service-requests")
+@RequiredArgsConstructor
 public class ServiceRequestController {
     private final ServiceRequestService serviceRequestService;
-
-    @Value("${jwt.custom-claim}")
-    private String customClaimUri;
-
-    @Autowired
-    public ServiceRequestController(ServiceRequestService serviceRequestService) {
-        this.serviceRequestService = serviceRequestService;
-    }
+    private final JwtProperties jwtProperties;
 
     @GetMapping
     public List<ServiceEntity> getAllServiceRequests() {
@@ -50,7 +46,7 @@ public class ServiceRequestController {
         }
 
         String customClaim = jwt.getClaim("customClaim");
-        if (customClaim == null || !customClaim.equals(customClaimUri)) {
+        if (customClaim == null || !customClaim.equals(jwtProperties.getCustomClaim())) {
             return ResponseEntity.status(403).body("Token yetkili değil.");
         }
 
@@ -70,9 +66,17 @@ public class ServiceRequestController {
         }
     }
 
+    // Tek bir ID'yi silme
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteServiceRequest(@PathVariable Long id) {
         serviceRequestService.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    // Birden fazla ID'yi silme
+    @DeleteMapping
+    public ResponseEntity<Void> deleteServiceRequests(@RequestBody List<Long> ids) {
+        serviceRequestService.deleteByIds(ids);
         return ResponseEntity.noContent().build();
     }
 
